@@ -17,7 +17,7 @@ type message[T any] struct {
 	action string
 }
 
-type LRUCache[T any] interface {
+type LRUCacher[T any] interface {
 	Has(key string) bool
 	Get(key string) (T, error)
 	Set(key string, value T) T
@@ -128,14 +128,14 @@ func (cache InMemoryLRUCache[T]) setFromChannel(key string, value T) T {
 }
 
 type LRUCacheProvider[T any] interface {
-	NewLRUCache(config LRUCacheConfig) LRUCache[T]
+	NewLRUCache(config LRUCacheConfig) LRUCacher[T]
 }
 
 // e.g other
 // type RedisCacheProvider[T any] struct{}
 type InMemoryLRUCacheProvider[T any] struct{}
 
-func (cacheProvider InMemoryLRUCacheProvider[T]) NewLRUCache(config LRUCacheConfig) LRUCache[T] {
+func (cacheProvider InMemoryLRUCacheProvider[T]) NewLRUCache(config LRUCacheConfig) LRUCacher[T] {
 	cache := InMemoryLRUCache[T]{Config: config, Storage: make(map[string]*StorageItem[T])}
 	cache.startMessageListener(50 * time.Millisecond)
 	return cache
